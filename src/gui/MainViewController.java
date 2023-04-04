@@ -52,7 +52,7 @@ public class MainViewController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		
 	}
-
+	
 	// Função genérica
 	private synchronized <T> void loadView(String absoluteName, Consumer<T> initializingAction) {
 		/* 
