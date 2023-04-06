@@ -6,9 +6,11 @@ import java.util.Locale;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 public class Utils {
 
@@ -27,6 +29,7 @@ public class Utils {
 		}
 	}
 	
+	// https://stackoverflow.com/questions/47484280/format-of-date-in-the-javafx-tableview
 	public static <T> void formatTableColumnLocalDate(TableColumn<T, LocalDate> tableColumn, String format) {
 		tableColumn.setCellFactory(column -> {
 			TableCell<T, LocalDate> cell = new TableCell<T, LocalDate>() {
@@ -61,6 +64,34 @@ public class Utils {
 				}
 			};
 			return cell;
+		});
+	}
+	
+	// https://stackoverflow.com/questions/26831978/javafx-datepicker-getvalue-in-a-specific-format
+	public static void formatDatePicker(DatePicker datePicker, String format) {
+		datePicker.setConverter(new StringConverter<LocalDate>() {
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(format);
+			{
+				datePicker.setPromptText(format.toLowerCase());
+			}
+
+			@Override
+			public String toString(LocalDate date) {
+				if (date != null) {
+					return dateFormatter.format(date);
+				} else {
+					return "";
+				}
+			}
+
+			@Override
+			public LocalDate fromString(String string) {
+				if (string != null && !string.isEmpty()) {
+					return LocalDate.parse(string, dateFormatter);
+				} else {
+					return null;
+				}
+			}
 		});
 	}
 }
