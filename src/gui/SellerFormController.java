@@ -94,7 +94,6 @@ public class SellerFormController implements Initializable {
 
 	@FXML
 	public void onBtnSaveAction(ActionEvent event) {
-		// Programação defensiva necessária por conta da injeção de dependência manual
 		if (entity == null) {
 			throw new IllegalStateException("Entity was null");
 		}
@@ -103,15 +102,11 @@ public class SellerFormController implements Initializable {
 			throw new IllegalStateException("Service was null");
 		}
 		
-		// Operação com o banco de dados pode gerar exceção
 		try {
 			entity = getFormData();
 			service.saveOrUpdate(entity);
 			
-			// Notificando os listeners -> executa o método da interface
 			notifyDataChangeListeners();
-			
-			// Fechando a janela
 			Utils.currentStage(event).close();
 		}
 		catch (ValidationException e) {
@@ -135,8 +130,25 @@ public class SellerFormController implements Initializable {
 		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
 			exception.addError("name", "Field can't be empty");
 		}
-		
 		obj.setName(txtName.getText());
+		
+		if (txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+			exception.addError("email", "Field can't be empty");
+		}
+		obj.setEmail(txtEmail.getText());
+		
+		if (dpBirthDate.getValue() == null) {
+			exception.addError("birthDate", "Field can't be empty");
+		} else {
+			obj.setBirthDate(dpBirthDate.getValue());
+		}
+		
+		if (txtBaseSalary.getText() == null || txtBaseSalary.getText().trim().equals("")) {
+			exception.addError("baseSalary", "Field can't be empty");
+		}
+		obj.setBaseSalary(Utils.tryParseToDouble(txtBaseSalary.getText()));
+		
+		obj.setDepartment(comboBoxDepartment.getValue());
 		
 		if (exception.getErrors().size() > 0) {
 			throw exception;
@@ -199,9 +211,10 @@ public class SellerFormController implements Initializable {
 	private void setErrorMessages(Map<String, String> errors) {
 		Set<String> fields = errors.keySet();
 		
-		if (fields.contains("name")) {
-			lblErrorName.setText(errors.get("name"));
-		}
+		lblErrorName.setText(fields.contains("name") ? errors.get("name") : "");
+		lblErrorEmail.setText(fields.contains("email") ? errors.get("email") : "");
+		lblErrorBirthDate.setText(fields.contains("birthDate") ? errors.get("birthDate") : "");
+		lblErrorBaseSalary.setText(fields.contains("baseSalary") ? errors.get("baseSalary") : "");
 	}
 	
 	private void initializeComboBoxDepartment() {
